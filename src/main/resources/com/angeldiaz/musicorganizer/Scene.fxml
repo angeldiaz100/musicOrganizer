@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="583.0" prefWidth="1165.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.angeldiaz.musicorganizer.MusicOrganizerController">
+   <children>
+      <ProgressBar id="timeBar" layoutY="493.0" prefHeight="18.0" prefWidth="598.0" progress="0.0" />
+      <ImageView id="playButton" fitHeight="37.0" fitWidth="37.0" layoutX="231.0" layoutY="545.0" onMouseClicked="#playSong">
+         <image>
+            <Image url="@Images/play.png" />
+         </image>
+      </ImageView>
+      <ImageView id="nextSongButton" fitHeight="37.0" fitWidth="37.0" layoutX="346.0" layoutY="545.0" onMouseClicked="#nextSong">
+         <image>
+            <Image url="@Images/skipnext.png" />
+         </image>
+      </ImageView>
+      <ImageView id="prevSongButton" fitHeight="37.0" fitWidth="37.0" layoutX="112.0" layoutY="545.0" onMouseClicked="#prevSong">
+         <image>
+            <Image url="@Images/skipprevious.png" />
+         </image>
+      </ImageView>
+      <ImageView id="pauseButton" fitHeight="37.0" fitWidth="37.0" layoutX="451.0" layoutY="545.0" onMouseClicked="#stopSong">
+         <image>
+            <Image url="@Images/stop.png" />
+         </image>
+      </ImageView>
+      <Label id="nowPlayingLabel" fx:id="nowPlayingLabel" alignment="CENTER" layoutX="-1.0" layoutY="409.0" prefHeight="31.0" prefWidth="598.0" text="Welcome to">
+         <font>
+            <Font size="21.0" />
+         </font>
+      </Label>
+      <Label id="songLabel" fx:id="songLabel" alignment="CENTER" layoutX="-1.0" layoutY="440.0" prefHeight="55.0" prefWidth="598.0" text="Music Organizer">
+         <font>
+            <Font size="31.0" />
+         </font>
+      </Label>
+      <ImageView id="songImage" fitHeight="350.0" fitWidth="350.0" layoutX="125.0" layoutY="50.0">
+         <image>
+            <Image url="@Images/emptyalbumcover.png" />
+         </image>
+      </ImageView>
+      <TableView id="songListTable" fx:id="songListTable" layoutX="597.0" onMouseClicked="#getSong" prefHeight="591.0" prefWidth="576.0">
+        <columns>
+          <TableColumn id="fileName" fx:id="artistName" prefWidth="131.0" text="Artist" />
+          <TableColumn id="songName" fx:id="songName" prefWidth="216.0" text="Song" />
+            <TableColumn id="albumName" fx:id="albumName" minWidth="0.0" prefWidth="127.0" text="Album" />
+            <TableColumn id="playCount" fx:id="playCount" prefWidth="101.0" text="Play Count" />
+        </columns>
+      </TableView>
+      <Button id="uploadSong" fx:id="uploadSong" mnemonicParsing="false" onMouseClicked="#uploadSong" text="Upload Music" />
+      <Button id="sortPlayCountButton" layoutX="89.0" mnemonicParsing="false" onMouseClicked="#sortPlayCount" prefHeight="25.0" prefWidth="102.0" text="Sort Play Count" />
+   </children>
+</AnchorPane>
