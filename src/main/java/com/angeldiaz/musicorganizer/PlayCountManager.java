@@ -11,9 +11,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class PlayCountManager {
-    private static final String playCountFileName = "src/main/resources/com/angeldiaz/musicorganizer/playcount.txt";
+    private static final String playCountFileName = "src/main/resources/com/angeldiaz/musicorganizer/fileInfo.txt";
 
     public void addPlay(HashMap<String, String> song) {
         int playCount = getPlayCount(song);
@@ -24,27 +25,43 @@ public class PlayCountManager {
         return Integer.parseInt(song.getOrDefault("PlayCount", "0"));
     }
 
-    public void savePlayCounts(List<HashMap<String, String>> songList) throws FileNotFoundException {
-        try (PrintWriter out = new PrintWriter(new FileWriter (playCountFileName))) {
+    public void savePlayCounts(List<HashMap<String, String>> songList, HashTable genreHashTable) throws FileNotFoundException {
+        try (PrintWriter out = new PrintWriter(new FileWriter(playCountFileName))) {
             for (HashMap<String, String> song : songList) {
-                out.println(song.get("Path") + "," + getPlayCount(song));
+                String genreTagsString = getGenreTagsString(genreHashTable, song.get("Path"));
+                out.println(song.get("Path") + "," + getPlayCount(song) + "," + genreTagsString); // Include genre tags in the line
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void loadPlayCounts(List<HashMap<String, String>> songList) throws IOException {
+    private String getGenreTagsString(HashTable genreHashTable, String songPath) {
+        Set<String> genreTags = genreHashTable.getGenreTags(songPath);
+        if (genreTags != null && !genreTags.isEmpty()) {
+            return String.join(",", genreTags);
+        } else {
+            return "";
+        }
+    }
+
+    public void loadPlayCounts(List<HashMap<String, String>> songList, HashTable genreHashTable) throws IOException {
         try (BufferedReader in = new BufferedReader(new FileReader(playCountFileName))) {
             String currentLine;
             while ((currentLine = in.readLine()) != null) {
                 String[] parts = currentLine.split(",");
-                if (parts.length == 2) {
+                if (parts.length >= 2) {
                     String path = parts[0];
                     int playCount = Integer.parseInt(parts[1]);
-                    for(HashMap<String, String> song : songList) {
-                        if(song.get("Path").equals(path)) {
+                    String[] genreTags = parts.length > 2 ? parts[2].split(",") : new String[0]; // Check if there are genre tags
+                    for (HashMap<String, String> song : songList) {
+                        if (song.get("Path").equals(path)) {
                             song.put("PlayCount", String.valueOf(playCount));
+                            for (String genreTag : genreTags) {
+                                genreHashTable.addGenreTag(path, genreTag);
+                            }
+                            // Update the genre column in the song data
+                            song.put("Genre", String.join(",", genreTags));
                             break;
                         }
                     }

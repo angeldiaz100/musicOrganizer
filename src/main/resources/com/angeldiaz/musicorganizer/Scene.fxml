@@ -43,15 +43,29 @@
             <Image url="@Images/emptyalbumcover.png" />
          </image>
       </ImageView>
-      <TableView id="songListTable" fx:id="songListTable" layoutX="597.0" onMouseClicked="#getSong" prefHeight="591.0" prefWidth="576.0">
+      <TableView id="songListTable" fx:id="songListTable" layoutX="597.0" onMouseClicked="#getSong" prefHeight="493.0" prefWidth="575.0">
         <columns>
           <TableColumn id="fileName" fx:id="artistName" prefWidth="131.0" text="Artist" />
-          <TableColumn id="songName" fx:id="songName" prefWidth="216.0" text="Song" />
-            <TableColumn id="albumName" fx:id="albumName" minWidth="0.0" prefWidth="127.0" text="Album" />
-            <TableColumn id="playCount" fx:id="playCount" prefWidth="101.0" text="Play Count" />
+          <TableColumn id="songName" fx:id="songName" prefWidth="160.0" text="Song" />
+            <TableColumn id="albumName" fx:id="albumName" minWidth="0.0" prefWidth="116.0" text="Album" />
+           <TableColumn id="genreColumn" fx:id="genreColumn" minWidth="0.0" prefWidth="96.0" text="Genre" />
+            <TableColumn id="playCount" fx:id="playCount" minWidth="0.0" prefWidth="71.0" text="Play Count" />
         </columns>
       </TableView>
       <Button id="uploadSong" fx:id="uploadSong" mnemonicParsing="false" onMouseClicked="#uploadSong" text="Upload Music" />
       <Button id="sortPlayCountButton" layoutX="89.0" mnemonicParsing="false" onMouseClicked="#sortPlayCount" prefHeight="25.0" prefWidth="102.0" text="Sort Play Count" />
+      <TextField id="lookup" fx:id="lookup" layoutX="682.0" layoutY="511.0" />
+      <Label layoutX="605.0" layoutY="508.0" text="Search:">
+         <font>
+            <Font size="21.0" />
+         </font>
+      </Label>
+      <Label layoutX="605.0" layoutY="539.0" text="Add genre:">
+         <font>
+            <Font size="21.0" />
+         </font>
+      </Label>
+      <TextField id="genreInput" fx:id="genreInput" layoutX="715.0" layoutY="542.0" />
+      <Button id="genreAddButton" fx:id="genreAddButton" layoutX="877.0" layoutY="542.0" mnemonicParsing="false" onMouseClicked="#addGenreTag" text="Add" />
    </children>
 </AnchorPane>

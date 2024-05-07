@@ -1,0 +1,2 @@
+C:\Users\angel\IdeaProjects\musicOrganizer\src\main\resources\com\angeldiaz\musicorganizer\Music\Disguise.mp3,27,EDM
+C:\Users\angel\IdeaProjects\musicOrganizer\src\main\resources\com\angeldiaz\musicorganizer\Music\Upside Down (prod. Woesum).mp3,43,R&B

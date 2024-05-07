@@ -24,9 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MusicOrganizerController implements Initializable {
 
@@ -35,12 +33,14 @@ public class MusicOrganizerController implements Initializable {
     private ObservableList<HashMap<String, String>> songListData = FXCollections.observableArrayList();
     private MediaPlayer mediaPlayer;
     private PlayCountManager playCountManager = new PlayCountManager();
+    private HashTable genreHashTable = new HashTable();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         artistName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("Artist")));
         albumName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("Album")));
         playCount.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("PlayCount")));
+        genreColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("Genre")));
         songName.setCellValueFactory(data -> {
             String songTitle = data.getValue().get("Title");
             if (songTitle != null) {
@@ -56,8 +56,8 @@ public class MusicOrganizerController implements Initializable {
                 songListData.addAll(songList);
                 songListTable.setItems(songListData);
 
-                // Loads and sorts plays from most to least on start-up
-                playCountManager.loadPlayCounts(songListData);
+                // Loads and sorts plays from most to least on start-up, and loads genres
+                playCountManager.loadPlayCounts(songListData, genreHashTable);
                 playCountManager.sortPlayCount(songListData);
 
             } else {
@@ -66,6 +66,19 @@ public class MusicOrganizerController implements Initializable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        lookup.textProperty().addListener((observable, oldValue, newValue) -> {
+            List<HashMap<String, String>> filteredList = new ArrayList<>();
+            if (newValue == null || newValue.isEmpty()) {
+                filteredList.addAll(songList);
+            } else {
+                List<HashMap<String, String>> searchResults = audioFileReader.searchSong(newValue);
+                if (searchResults != null && !searchResults.isEmpty()) {
+                    filteredList.addAll(searchResults);
+                }
+            }
+            songListData.setAll(filteredList);
+        });
     }
 
     @FXML
@@ -74,6 +87,12 @@ public class MusicOrganizerController implements Initializable {
     private TableView<HashMap<String, String>> songListTable;
     @FXML
     private TableColumn<HashMap<String, String>, String> artistName, songName, albumName, playCount;
+    @FXML
+    private TextField lookup;
+    @FXML
+    private TextField genreInput;
+    @FXML
+    private TableColumn<HashMap<String, String>, String> genreColumn;
 
 // Code for buttons
 
@@ -100,7 +119,7 @@ public class MusicOrganizerController implements Initializable {
     void playSelectedSong(HashMap<String, String> selectedSong) {
         playCountManager.addPlay(selectedSong);
         try {
-            playCountManager.savePlayCounts(songListData);
+            playCountManager.savePlayCounts(songListData, genreHashTable); // Save play counts along with genre tags
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -196,6 +215,44 @@ public class MusicOrganizerController implements Initializable {
             Files.copy(file.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             nowPlayingLabel.setText("Upload Failed");
+        }
+    }
+
+    @FXML
+    void addGenreTag(MouseEvent event) {
+        HashMap<String, String> selectedSong = songListTable.getSelectionModel().getSelectedItem();
+        if (selectedSong != null) {
+            String genre = genreInput.getText().trim();
+            if (!genre.isEmpty()) {
+                // Clear existing genre tags for the selected song
+                String path = selectedSong.get("Path");
+                Set<String> existingGenreTags = genreHashTable.getGenreTags(path);
+                if (existingGenreTags != null) {
+                    for (String existingTag : existingGenreTags) {
+                        genreHashTable.removeGenreTag(path, existingTag);
+                    }
+                }
+
+                // Add new genre tag
+                genreHashTable.addGenreTag(path, genre);
+
+                // Update genre in the song data
+                selectedSong.put("Genre", genre);
+                int index = songListData.indexOf(selectedSong);
+                if (index != -1) {
+                    songListData.set(index, selectedSong); // Update the observable list
+                }
+
+                // Save updated play counts and genre tags to fileInfo
+                try {
+                    playCountManager.savePlayCounts(songListData, genreHashTable);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    // Handle file not found exception
+                }
+
+                songListTable.refresh(); // Refresh the table view
+            }
         }
     }
 }

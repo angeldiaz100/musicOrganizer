@@ -6,13 +6,18 @@
 // Description: Filters and reads files to be put in a HashMap
 // **********************************************************************************
 package com.angeldiaz.musicorganizer;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 public class AudioFileReader {
+    private BST bst;
+
+    public AudioFileReader() {
+        this.bst = new BST();
+    }
 
     public List<HashMap<String, String>> readAudioFiles() {
         // Restrictions for what is displayed and allowed to be uploaded
@@ -32,6 +37,7 @@ public class AudioFileReader {
                         MetaDataExtractor extractor = new MetaDataExtractor();
                         HashMap<String, String> metadata = extractor.extractMetaData(file);
                         metadata.put("Path", file.getAbsolutePath());
+                        bst.insert(metadata);
                         metadataList.add(metadata);
                         break;
                     }
@@ -39,6 +45,19 @@ public class AudioFileReader {
             }
         }
         return metadataList;
+    }
+
+    public List<HashMap<String, String>> searchSong(String title) {
+        List<HashMap<String, String>> searchResults = new ArrayList<>();
+
+        if (title != null && !title.isEmpty()) {
+            // Search for matching songs
+            List<HashMap<String, String>> results = bst.searchAll(title);
+            if (results != null) {
+                searchResults.addAll(results);
+            }
+        }
+        return searchResults;
     }
 }
 
