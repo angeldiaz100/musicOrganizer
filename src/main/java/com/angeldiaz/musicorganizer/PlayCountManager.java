@@ -91,10 +91,8 @@ public class PlayCountManager {
     private void merge(List<HashMap<String, String>> songList, int start, int mid, int end) {
         int n1 = mid - start + 1;
         int n2 = end - mid;
-
         List<HashMap<String, String>> left = new ArrayList<>(songList.subList(start, start + n1));
         List<HashMap<String, String>> right = new ArrayList<>(songList.subList(mid + 1, mid + 1 + n2));
-
         int i = 0, j = 0, k = start;
         while (i < n1 && j < n2) {
             int playCount1 = getPlayCount(left.get(i));
@@ -105,11 +103,9 @@ public class PlayCountManager {
                 songList.set(k++, right.get(j++));
             }
         }
-
         while (i < n1) {
             songList.set(k++, left.get(i++));
         }
-
         while (j < n2) {
             songList.set(k++, right.get(j++));
         }

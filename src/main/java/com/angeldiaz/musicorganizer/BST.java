@@ -39,7 +39,6 @@ public class BST {
             root = new Node(data);
             return root;
         }
-
         String title = data.get("Title");
         String currentNodeTitle = root.data.get("Title");
         if (title.compareToIgnoreCase(currentNodeTitle) < 0) {
@@ -47,7 +46,6 @@ public class BST {
         } else if (title.compareToIgnoreCase(currentNodeTitle) > 0) {
             root.right = insertRecursive(root.right, data);
         }
-
         return root;
     }
 
@@ -65,9 +63,12 @@ public class BST {
             if (nodeTitle != null && nodeTitle.toLowerCase().contains(searchQuery.toLowerCase())) {
                 results.add(root.data);
             }
-
             searchAllRecursive(root.left, searchQuery, results);
             searchAllRecursive(root.right, searchQuery, results);
         }
+    }
+
+    public List<HashMap<String, String>> searchByTitle(String title) {
+        return searchAll(title);
     }
 }

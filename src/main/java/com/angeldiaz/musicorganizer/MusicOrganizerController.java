@@ -4,6 +4,7 @@
 // Course Section: CMIS201-ONL1 (Seidel) Spring 2024
 // File: MusicOrganizerController.java
 // Description: Class that controls the scene. Contains methods that set up song information in the columns, sets what's playing, an upload method, and play buttons.
+// Runs the searching and loading of song lists into concurrent processing, for potentially larger libraries.
 // **********************************************************************************
 package com.angeldiaz.musicorganizer;
 
@@ -25,6 +26,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MusicOrganizerController implements Initializable {
 
@@ -34,6 +37,7 @@ public class MusicOrganizerController implements Initializable {
     private MediaPlayer mediaPlayer;
     private PlayCountManager playCountManager = new PlayCountManager();
     private HashTable genreHashTable = new HashTable();
+    private ExecutorService executor = Executors.newFixedThreadPool(5);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -50,34 +54,41 @@ public class MusicOrganizerController implements Initializable {
                 return new SimpleStringProperty(fileName != null ? fileName : "");
             }
         });
-        try {
-            songList = audioFileReader.readAudioFiles();
-            if (songList != null) {
-                songListData.addAll(songList);
-                songListTable.setItems(songListData);
 
-                // Loads and sorts plays from most to least on start-up, and loads genres
-                playCountManager.loadPlayCounts(songListData, genreHashTable);
-                playCountManager.sortPlayCount(songListData);
+        // Uses concurrent processing
+        executor.execute(() -> {
+            try {
+                songList = audioFileReader.readAudioFiles();
+                if (songList != null) {
+                    songListData.addAll(songList);
+                    songListTable.setItems(songListData);
 
-            } else {
-                songListTable.setPlaceholder(new Label("No songs found!"));
+                    // Loads and sorts plays from most to least on start-up, and loads genres
+                    playCountManager.loadPlayCounts(songListData, genreHashTable);
+                    playCountManager.sortPlayCount(songListData);
+
+                } else {
+                    songListTable.setPlaceholder(new Label("No songs found!"));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        });
+
 
         lookup.textProperty().addListener((observable, oldValue, newValue) -> {
-            List<HashMap<String, String>> filteredList = new ArrayList<>();
-            if (newValue == null || newValue.isEmpty()) {
-                filteredList.addAll(songList);
-            } else {
-                List<HashMap<String, String>> searchResults = audioFileReader.searchSong(newValue);
-                if (searchResults != null && !searchResults.isEmpty()) {
-                    filteredList.addAll(searchResults);
+            executor.execute(() -> {  // Uses concurrent processing
+                List<HashMap<String, String>> filteredList = new ArrayList<>();
+                if (newValue == null || newValue.isEmpty()) {
+                    filteredList.addAll(songList);
+                } else {
+                    List<HashMap<String, String>> searchResults = audioFileReader.searchSong(newValue);
+                    if (searchResults != null && !searchResults.isEmpty()) {
+                        filteredList.addAll(searchResults);
+                    }
                 }
-            }
-            songListData.setAll(filteredList);
+                songListData.setAll(filteredList);
+            });
         });
     }
 
@@ -250,8 +261,23 @@ public class MusicOrganizerController implements Initializable {
                     e.printStackTrace();
                     // Handle file not found exception
                 }
-
                 songListTable.refresh(); // Refresh the table view
+            }
+        }
+    }
+
+    @FXML
+    void deleteSong(MouseEvent event) {
+        HashMap<String, String> selectedSong = songListTable.getSelectionModel().getSelectedItem();
+        if (selectedSong != null) {
+            // Remove the selected song from the song list data
+            songListData.remove(selectedSong);
+
+            // Save the updated play counts and genre tags
+            try {
+                playCountManager.savePlayCounts(songListData, genreHashTable);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }

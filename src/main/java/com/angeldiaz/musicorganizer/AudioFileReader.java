@@ -49,9 +49,7 @@ public class AudioFileReader {
 
     public List<HashMap<String, String>> searchSong(String title) {
         List<HashMap<String, String>> searchResults = new ArrayList<>();
-
         if (title != null && !title.isEmpty()) {
-            // Search for matching songs
             List<HashMap<String, String>> results = bst.searchAll(title);
             if (results != null) {
                 searchResults.addAll(results);

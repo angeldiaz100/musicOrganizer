@@ -67,5 +67,6 @@
       </Label>
       <TextField id="genreInput" fx:id="genreInput" layoutX="715.0" layoutY="542.0" />
       <Button id="genreAddButton" fx:id="genreAddButton" layoutX="877.0" layoutY="542.0" mnemonicParsing="false" onMouseClicked="#addGenreTag" text="Add" />
+      <Button id="deleteSongButton" layoutX="1030.0" layoutY="511.0" mnemonicParsing="false" onMouseClicked="#deleteSong" text="Delete Song" />
    </children>
 </AnchorPane>

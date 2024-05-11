@@ -1,2 +1,1 @@
-C:\Users\angel\IdeaProjects\musicOrganizer\src\main\resources\com\angeldiaz\musicorganizer\Music\Disguise.mp3,27,EDM
-C:\Users\angel\IdeaProjects\musicOrganizer\src\main\resources\com\angeldiaz\musicorganizer\Music\Upside Down (prod. Woesum).mp3,43,R&B
+C:\Users\angel\IdeaProjects\musicOrganizer\src\main\resources\com\angeldiaz\musicorganizer\Music\Sport DJ - Club Edits Compilation -2019​-​2021- - 03 PSYCHE (ELYSIAN MIX).mp3,9,Techno

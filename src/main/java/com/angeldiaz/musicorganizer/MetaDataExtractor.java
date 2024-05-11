@@ -41,7 +41,6 @@ public class MetaDataExtractor {
                 metaDataMap.put("Title", mp3File.getName());
                 metaDataMap.put("Artist", "Unknown");
                 metaDataMap.put("Album", "Unknown");
-                metaDataMap.put("Last Played", "Unknown");
             }
         } catch (IOException | UnsupportedTagException | InvalidDataException e) {
             throw new RuntimeException(e);
